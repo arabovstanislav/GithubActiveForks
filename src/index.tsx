@@ -3,10 +3,33 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { relayStylePagination } from '@apollo/client/utilities';
+import { ChakraProvider } from '@chakra-ui/react';
+
+const client = new ApolloClient({
+  uri: 'https://api.github.com/graphql',
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          forks: relayStylePagination(),
+        },
+      },
+    },
+  }),
+  headers: {
+    authorization: 'bearer <PERSONAL_ACCESS_TOKEN>',
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ApolloProvider client={client}>
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
